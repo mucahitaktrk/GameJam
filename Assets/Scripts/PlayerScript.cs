@@ -8,6 +8,8 @@ public class PlayerScript : MonoBehaviour
     MeshFilter meshFilter;
 
     [SerializeField] private Mesh capsuleMesh = null;
+    public static bool isHide = false;
+
 
     void Start()
     {
@@ -26,7 +28,7 @@ public class PlayerScript : MonoBehaviour
         float mouseX = Input.GetAxisRaw("Mouse X");
         float mouseY = Input.GetAxisRaw("Mouse Y");
 
-        transform.Rotate(new Vector3(0, mouseX * 2, 0));
+        transform.Rotate(new Vector3(0, mouseX * 5, 0));
     }
 
     private void OnTriggerStay(Collider other)
@@ -38,10 +40,12 @@ public class PlayerScript : MonoBehaviour
                 MeshFilter otherMeshFilter = other.gameObject.GetComponent<MeshFilter>();
                 meshFilter.mesh = otherMeshFilter.mesh;
                 rb.velocity = Vector3.zero;
+                isHide = true;
             }
             else
             {
                 meshFilter.mesh = capsuleMesh;
+                isHide = false;
             }
         }
         else if (other.gameObject.layer == 7)
@@ -49,6 +53,7 @@ public class PlayerScript : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.K))
             {
                 Destroy(other.gameObject);
+                isHide = false;
             }
 
         }
