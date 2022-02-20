@@ -7,10 +7,10 @@ public class PlayerScript : MonoBehaviour
     Rigidbody rb;
     SkinnedMeshRenderer meshFilter;
     Animator playerAnimator;
-    [SerializeField] private Mesh capsuleMesh = null;
+    [SerializeField] private Mesh playerMesh = null;
+    [SerializeField] private Material playerMaterial = null;
     public static bool isHide = false;
 
-    private float speed = 0;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -22,37 +22,48 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        rb.velocity = new Vector3(horizontal * 10, 0, vertical * 10).normalized;
-        rb.velocity = transform.TransformDirection(rb.velocity);
+        if (!isHide)
+        {
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            rb.velocity = new Vector3(horizontal * 2, 0, vertical * 2);
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                rb.velocity = new Vector3(horizontal * 5, 0, vertical * 5);
+            }
+            if (rb.velocity != Vector3.zero)
+            {
+                Quaternion toRotation = Quaternion.LookRotation(rb.velocity, Vector3.up);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, 720 * Time.deltaTime);
+            }
 
-        float mouseX = Input.GetAxisRaw("Mouse X");
-        float mouseY = Input.GetAxisRaw("Mouse Y");
+            float i = Mathf.Abs(rb.velocity.z) + Mathf.Abs(rb.velocity.x);
 
-        transform.rotation = Quaternion.Euler(0,90,vertical);
+            playerAnimator.SetFloat("speedZ", Mathf.Abs(i));
 
-        float i = rb.velocity.z + rb.velocity.x;
-
-        playerAnimator.SetFloat("speedZ", Mathf.Abs(i));
-       // playerAnimator.SetFloat("speedZ", Mathf.Abs(vertical));
+        }
 
     }
 
-    private void OnTriggerStay(Collider other)
-    {
+
+
+private void OnCollisionStay(Collision other)
+{
         if (other.gameObject.layer == 6)
         {
             if (Input.GetKey(KeyCode.G))
             {
                 MeshFilter otherMeshFilter = other.gameObject.GetComponent<MeshFilter>();
+                MeshRenderer otherMeshRenderer = other.gameObject.GetComponent<MeshRenderer>();
+                meshFilter.material = otherMeshRenderer.material;
                 meshFilter.sharedMesh = otherMeshFilter.mesh;
                 rb.velocity = Vector3.zero;
                 isHide = true;
             }
             else
             {
-                meshFilter.sharedMesh = capsuleMesh;
+                meshFilter.sharedMesh = playerMesh;
+                meshFilter.material = playerMaterial;
                 isHide = false;
             }
         }
@@ -67,11 +78,12 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
+    private void OnCollisionExit(Collision other)
+{
         if (other.gameObject.layer == 6)
         {
-            meshFilter.sharedMesh = capsuleMesh;
+            meshFilter.sharedMesh = playerMesh;
+            meshFilter.material = playerMaterial;
         }
     }
 }
