@@ -3,7 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - urun1
+  - urun2
+  - urun3
+  - urun4
+  - urun5
+  - urun6
+  - urun7
+  - urun8
   layers:
   - Default
   - TransparentFX

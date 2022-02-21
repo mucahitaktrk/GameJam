@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+using UnityEngine.SceneManagement;
 public class SecurityScript : MonoBehaviour
 {
 
@@ -15,10 +15,13 @@ public class SecurityScript : MonoBehaviour
 
     private Animator securityAnimator;
 
+    public GameObject fail;
+
     void Start()
     {
         securityNavMeshAgent = GetComponent<NavMeshAgent>();
         securityAnimator = GetComponent<Animator>();
+        fail.SetActive(fail);
     }
 
     
@@ -44,9 +47,16 @@ public class SecurityScript : MonoBehaviour
         {
             securityAnimator.SetBool("Run", false);
         }
-        if (Vector3.Distance(transform.position , playerTransfor.position) <= 5f && !PlayerScript.isHide)
+        if (Vector3.Distance(transform.position , playerTransfor.position) <= 3f && !PlayerScript.isHide)
         {
-            Debug.Log("Yakalandın !!");
+            fail.SetActive(true);
+            Time.timeScale = 0f;
         }
+
+        
+    }
+    public void Lose()
+    {
+        SceneManager.LoadScene(0);
     }
 }
